@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EmuiiboWebTool</title>
+  <link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="libs/material-icons/material-icons.css" rel="stylesheet" type="text/css">
+  <link href="css/styles.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="row w-75 m-auto pt-3 pb-2 px-3">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h6>1 - Choose a virtual amiibo</h6>
+        <div class="row">
+          <div class="col-md-6 text-center">
+            <select id="select-amiibo-series" class="w-100 form-control" onchange="loadSelectAmiibos()"></select>
+          </div>
+          <div class="col-md-6 text-center">
+            <select id="select-amiibo" class="w-100 form-control" onchange="loadSelectedAmiiboData()"></select>
+          </div>
+        </div>
+        <div class="text-center pt-3 pb-3">
+          <img id="img-amiibo" src="" alt="Amiibo Image">
+        </div>
+      </div>
+    </div>
+    <div class="text-center pt-3">
+      <input id="btn-about-emuiibo" type="button" class="btn btn-dark" value="About emuiibo and emutool"
+             onclick="$('#about-modal').modal()">
+      <div class="text-muted pt-3">In console, emuiibo will generate a random mii for the amiibo.</div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h6>2 - Customize the virtual amiibo</h6>
+        <div class="form-group">
+          <label for="input-name-amiibo">Name:</label>
+          <input type="text" id="input-name-amiibo" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="input-directory-name">Directory name:</label>
+          <input type="text" id="input-directory-name" class="form-control">
+        </div>
+        <input type="checkbox" id="check-use-name-as-directory" onchange="changeDirectoryOption()">
+        <label for="check-use-name-as-directory">Use name as directory name</label>
+        <p>By default, this tool generates a unique, random UUID for the virtual amiibo.</p>
+        <p>However, if the option below is selected, it won't be generated, and emuiibo will instead use a
+          different, random UUID each time the amiibo is accessed in a game.</p>
+        <input type="checkbox" id="check-randomize-uuid" onclick="showRandomizeUUIDModal()">
+        <label for="check-randomize-uuid">Randomize UUID in emulation</label>
+        <p>Save the amiibo's image along with the amiibo.</p>
+        <input type="checkbox" id="check-save-amiibo-image">
+        <label for="check-save-amiibo-image">Save amiibo image</label>
+      </div>
+    </div>
+    <div class="card mt-3">
+      <div class="card-body">
+        <h6>3 - Generate the virtual amiibo</h6>
+        <div class="text-center">
+          <input id="btn-create-amiibo" type="button" class="btn btn-dark" value="Create virtual amiibo"
+                 onclick="saveAmiibo()">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row w-75 m-auto px-3 py-1">
+  <div class="col-12">
+    <div class="d-flex justify-content-end align-items-center">
+      <div id="amiibo-api-status">
+        Downloading amiibo list from AmiiboAPI.
+      </div>
+      <i id="status-icon" class="material-icons pl-2 text-info">info</i>
+    </div>
+  </div>
+</div>
+<!-- Random UUID Modal -->
+<div class="modal fade" id="random-uuid-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Randomize UUID</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-2 text-center pr-1 d-flex align-items-center justify-content-center">
+            <i class="material-icons md-48 text-warning">warning</i>
+          </div>
+          <div class="col-md-10 pl-1">
+            Please, keep in mind that the random UUID feature might cause in some cases (Smash Bros., for example) the
+            amiibo not to be recognized. (for example, when saving data to the amiibo, it could not be recognized as the
+            original one). <br><br>Would you really like to enable this feature?
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" data-dismiss="modal"
+                onclick="$('#check-randomize-uuid').prop('checked', true)">Yes
+        </button>
+        <button type="button" class="btn btn-dark" data-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- About Modal -->
+<div class="modal fade" id="about-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">About Emuiibo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-2 text-center pr-1">
+            <i class="material-icons md-48 text-info">info</i>
+          </div>
+          <div class="col-md-10 pl-1">
+            For more information about emuiibo, check it's GitHub repository's README
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" data-dismiss="modal" onclick="openEmuiiboRepo()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="lds-ring centered">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+<div class="loader-background"></div>
+<script src="libs/jquery/jquery-3.5.0.min.js"></script>
+<script src="libs/bootstrap/bootstrap.min.js"></script>
+<script src="libs/jszip/jszip.min.js"></script>
+<script src="libs/jszip/jszip-utils.min.js"></script>
+<script src="js/scripts.js"></script>
+</body>
+</html>
